@@ -1,0 +1,193 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "./severity-vars.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  /* Severity scale — hex values come from app/severity-vars.css, generated
+     from app/lib/severity-tokens.ts (see scripts/sync-severity-css.ts). */
+  --color-critical: var(--critical);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
+  --color-ok: var(--ok);
+  --color-foreground-secondary: var(--foreground-secondary);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* Atlas Portal — navy/cyan dark theme, tokens taken from
+   design-reference/admin-insights-dashboard-navy.jsx */
+:root {
+  --background: #0a1120;
+  --foreground: #e7ecf5;
+  --card: #0b1424;
+  --card-foreground: #e7ecf5;
+  --popover: #0f1a2c;
+  --popover-foreground: #e7ecf5;
+  --primary: #22d3ee;
+  --primary-foreground: #06111f;
+  --secondary: #0e1826;
+  --secondary-foreground: #e7ecf5;
+  --muted: #0e1826;
+  --muted-foreground: #5d6d8a;
+  --foreground-secondary: #93a2bf;
+  --accent: #22364f;
+  --accent-foreground: #e7ecf5;
+  --destructive: #f0576b;
+  --border: #1b2740;
+  --border-strong: #22364f;
+  --input: #22364f;
+  --ring: #22d3ee;
+  --chart-1: #22d3ee;
+  --chart-2: #3b82f6;
+  --chart-3: #818cf8;
+  --chart-4: #34d399;
+  --chart-5: #f0576b;
+  --radius: 0.625rem;
+  --sidebar: #0b1424;
+  --sidebar-foreground: #e7ecf5;
+  --sidebar-primary: #22d3ee;
+  --sidebar-primary-foreground: #06111f;
+  --sidebar-accent: #0e1826;
+  --sidebar-accent-foreground: #e7ecf5;
+  --sidebar-border: #1b2740;
+  --sidebar-ring: #22d3ee;
+}
+
+.dark {
+  --background: #0a1120;
+  --foreground: #e7ecf5;
+  --card: #0b1424;
+  --card-foreground: #e7ecf5;
+  --popover: #0f1a2c;
+  --popover-foreground: #e7ecf5;
+  --primary: #22d3ee;
+  --primary-foreground: #06111f;
+  --secondary: #0e1826;
+  --secondary-foreground: #e7ecf5;
+  --muted: #0e1826;
+  --muted-foreground: #5d6d8a;
+  --foreground-secondary: #93a2bf;
+  --accent: #22364f;
+  --accent-foreground: #e7ecf5;
+  --destructive: #f0576b;
+  --border: #1b2740;
+  --border-strong: #22364f;
+  --input: #22364f;
+  --ring: #22d3ee;
+  --chart-1: #22d3ee;
+  --chart-2: #3b82f6;
+  --chart-3: #818cf8;
+  --chart-4: #34d399;
+  --chart-5: #f0576b;
+  --sidebar: #0b1424;
+  --sidebar-foreground: #e7ecf5;
+  --sidebar-primary: #22d3ee;
+  --sidebar-primary-foreground: #06111f;
+  --sidebar-accent: #0e1826;
+  --sidebar-accent-foreground: #e7ecf5;
+  --sidebar-border: #1b2740;
+  --sidebar-ring: #22d3ee;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    /* Page backdrop gradient from the reference top-level container. */
+    background-image: radial-gradient(
+      1200px 600px at 15% -10%,
+      #142138 0%,
+      #0a1120 45%,
+      #060a14 100%
+    );
+    background-attachment: fixed;
+  }
+  html {
+    @apply font-sans;
+  }
+
+  /* Reference scrollbar treatment */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #22364f;
+    border-radius: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+@layer components {
+  /* Card surface gradient — background-image so it layers over bg-card. */
+  .surface-card {
+    background-image: linear-gradient(180deg, #0f1a2c 0%, #0b1424 100%);
+  }
+
+  /* Cyan→blue gradient used for the logo mark and primary buttons. */
+  .surface-primary {
+    background-image: linear-gradient(135deg, #22d3ee, #3b82f6);
+  }
+
+  .logo-mark {
+    background-image: linear-gradient(135deg, #22d3ee, #3b82f6);
+    box-shadow: 0 0 20px rgba(34, 211, 238, 0.35);
+  }
+
+  /* Tinted panel behind the NLP query box. */
+  .surface-nlp {
+    background-image: linear-gradient(
+      135deg,
+      rgba(34, 211, 238, 0.08),
+      rgba(59, 130, 246, 0.05)
+    );
+    border-color: #24405a;
+  }
+}

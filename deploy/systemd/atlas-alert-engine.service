@@ -1,0 +1,30 @@
+# Atlas Portal — alert engine service unit
+# Drop-in for /etc/systemd/system/atlas-alert-engine.service
+#
+# Runs scripts/alert-engine.ts (package.json script "alerts:run") every 10
+# minutes via the matching .timer unit. The script imports ./env first, so
+# DATABASE_URL and friends are loaded from .env.local by scripts/env.ts — no
+# separate environment handling here.
+#
+# NOTE: adjust User/Group to the account that owns /opt/atlas-portal (and that
+# can reach Postgres on localhost:5433), and the pnpm path if yours differs.
+
+[Unit]
+Description=Atlas Portal alert engine (compute alerts from logs)
+Documentation=file:/opt/atlas-portal/deploy/README.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=atlas
+Group=atlas
+WorkingDirectory=/opt/atlas-portal
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+ExecStart=/usr/bin/env pnpm alerts:run
+
+# The engine writes everything to stdout/stderr via console.log/console.error.
+# systemd appends it to a file AND captures it in journald, so both
+# `tail -f /var/log/atlas-alert-engine.log` and `journalctl -u atlas-alert-engine` work.
+StandardOutput=append:/var/log/atlas-alert-engine.log
+StandardError=append:/var/log/atlas-alert-engine.log

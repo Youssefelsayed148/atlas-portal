@@ -1,0 +1,31 @@
+# Atlas Portal — service prober unit
+# Drop-in for /etc/systemd/system/atlas-prober.service
+#
+# Runs scripts/prober.ts (package.json script "checks:run") every minute via the
+# matching .timer unit. Each service_checks row self-gates on its own
+# interval_seconds, so a 1-minute cadence only probes checks that are actually
+# due. The script imports ./env first, so DATABASE_URL and friends are loaded
+# from .env.local by scripts/env.ts — no separate environment handling here.
+#
+# NOTE: adjust User/Group to the account that owns /opt/atlas-portal (and that
+# can reach Postgres on localhost:5433), and the pnpm path if yours differs.
+
+[Unit]
+Description=Atlas Portal service prober (write service_check_results)
+Documentation=file:/opt/atlas-portal/deploy/README.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=atlas
+Group=atlas
+WorkingDirectory=/opt/atlas-portal
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+ExecStart=/usr/bin/env pnpm checks:run
+
+# The prober writes everything to stdout/stderr via console.log/console.error.
+# systemd appends it to a file AND captures it in journald, so both
+# `tail -f /var/log/atlas-prober.log` and `journalctl -u atlas-prober` work.
+StandardOutput=append:/var/log/atlas-prober.log
+StandardError=append:/var/log/atlas-prober.log

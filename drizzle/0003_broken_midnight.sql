@@ -1,0 +1,1 @@
+ALTER TABLE "nlp_queries" ADD COLUMN "validation_failed" boolean DEFAULT false NOT NULL;

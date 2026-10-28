@@ -1,0 +1,20 @@
+# Atlas Portal — service prober timer unit
+# Drop-in for /etc/systemd/system/atlas-prober.timer
+#
+# Fires atlas-prober.service every minute.
+# Persistent=true runs any missed invocation after boot (e.g. the VPS was off).
+# Safe to run this often: each service_checks row self-gates on its own
+# interval_seconds (see main() in scripts/prober.ts), so a due check is probed
+# at most once per its configured interval regardless of timer cadence.
+
+[Unit]
+Description=Run the Atlas service prober every minute
+Requires=atlas-prober.service
+
+[Timer]
+OnCalendar=*:0/1
+Persistent=true
+Unit=atlas-prober.service
+
+[Install]
+WantedBy=timers.target

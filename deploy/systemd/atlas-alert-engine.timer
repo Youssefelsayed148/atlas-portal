@@ -1,0 +1,19 @@
+# Atlas Portal — alert engine timer unit
+# Drop-in for /etc/systemd/system/atlas-alert-engine.timer
+#
+# Fires atlas-alert-engine.service every 10 minutes.
+# Persistent=true runs any missed invocation after boot (e.g. the VPS was off),
+# which is safe because the engine is idempotent (open alerts are updated, not
+# duplicated — see scripts/alert-engine.ts applyResult()).
+
+[Unit]
+Description=Run the Atlas alert engine every 10 minutes
+Requires=atlas-alert-engine.service
+
+[Timer]
+OnCalendar=*:0/10
+Persistent=true
+Unit=atlas-alert-engine.service
+
+[Install]
+WantedBy=timers.target
