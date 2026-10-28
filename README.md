@@ -37,16 +37,20 @@ Standalone internal client portal for Osiris Labs marketing clients. Built from 
    pnpm db:push
    ```
 
-5. Seed alert rules and the default admin user:
+5. Set the admin password in `.env.local` (or `.env.production` on the server), then seed alert rules and the admin user:
+
+   ```bash
+   # .env.local / .env.production
+   ATLAS_ADMIN_PASSWORD=<at least 12 characters>
+   # optional, defaults to admin@atlas.local
+   ATLAS_ADMIN_EMAIL=you@example.com
+   ```
 
    ```bash
    pnpm db:seed
    ```
 
-   Default admin credentials:
-
-   - Email: `admin@atlas.local`
-   - Password: `AtlasAdmin123!`
+   Public sign-up is disabled; the seed script is the only way to create the first account.
 
 6. Run the dev server:
 
@@ -79,6 +83,7 @@ Copy `.env.example` to `.env.local` and adjust:
 - `DATABASE_URL` — Postgres connection string
 - `BETTER_AUTH_SECRET` — long random secret for auth tokens
 - `BETTER_AUTH_URL` — public URL of the app
+- `ATLAS_ADMIN_PASSWORD` — required by `pnpm db:seed` (min 12 chars)
 - `NEXT_PUBLIC_APP_URL` — public URL of the app
 - `LLM_API_KEY`, `LLM_BASE_URL`, `LLM_MODEL` — optional, required only for the NLP query box
 

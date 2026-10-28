@@ -12,6 +12,9 @@ export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL,
   emailAndPassword: {
     enabled: true,
+    // Public self-registration is closed. Accounts are created by the seed
+    // script, which sets ATLAS_ALLOW_SIGNUP=true for its own process only.
+    disableSignUp: process.env.ATLAS_ALLOW_SIGNUP !== "true",
     requireEmailVerification: false,
     autoSignIn: true,
   },

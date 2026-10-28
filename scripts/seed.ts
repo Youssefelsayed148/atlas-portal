@@ -1,11 +1,13 @@
 import "./env";
+// Must run before app/lib/auth is imported: auth.ts reads this at load time.
+process.env.ATLAS_ALLOW_SIGNUP = "true";
 import { db } from "../app/lib/db";
 import { auth } from "../app/lib/auth";
 import { alertRules, user } from "../app/lib/schema";
 import { eq } from "drizzle-orm";
 
-const ADMIN_EMAIL = "admin@atlas.local";
-const ADMIN_PASSWORD = "AtlasAdmin123!";
+const ADMIN_EMAIL = process.env.ATLAS_ADMIN_EMAIL ?? "admin@atlas.local";
+const ADMIN_PASSWORD = process.env.ATLAS_ADMIN_PASSWORD;
 const ADMIN_NAME = "Atlas Admin";
 
 const alertRuleSeedData = [
@@ -116,6 +118,11 @@ async function seed() {
   }
 
   // 2. Create admin user (email/password only)
+  if (!ADMIN_PASSWORD || ADMIN_PASSWORD.length < 12) {
+    throw new Error(
+      "ATLAS_ADMIN_PASSWORD must be set (min 12 chars) in .env.local or .env.production"
+    );
+  }
   const existingAdmin = await db
     .select()
     .from(user)
@@ -143,7 +150,7 @@ async function seed() {
       })
       .where(eq(user.id, signUp.user.id));
 
-    console.log(`Created admin user: ${ADMIN_EMAIL} / ${ADMIN_PASSWORD}`);
+    console.log(`Created admin user: ${ADMIN_EMAIL}`);
   } else {
     console.log(`Admin user already exists: ${ADMIN_EMAIL}`);
   }
