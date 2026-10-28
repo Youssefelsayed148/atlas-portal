@@ -109,4 +109,4 @@ The systemd units in `deploy/systemd/` are retained as a **legacy alternative** 
 | 5 — Alert engine | Complete |
 | 6 — Admin dashboard | Complete |
 | 7 — NLP query layer | Complete (requires LLM API key) |
-| 8 — Real onboarding + VPS validation | Scripts ready; waiting on real client CSV |
+| 8 — Real onboarding + VPS validation | Compose deployment prepared; VPS validation and real client CSV remain |
