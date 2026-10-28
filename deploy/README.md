@@ -1,4 +1,9 @@
-# Atlas Portal — schedulers
+# Legacy alternative: Atlas Portal systemd schedulers
+
+The units documented here are retained for installations that run the
+monitoring scripts outside Docker Compose. The supported VPS deployment now
+runs `prober` and `alert-engine` as Compose services; use the repository root
+README and `make up` for the containerized stack.
 
 Two independent systemd timer/service pairs on the self-hosted VPS:
 

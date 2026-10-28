@@ -1,0 +1,10 @@
+.git
+.next
+node_modules
+.pnpm-store
+.corepack
+.env*
+!.env.production.example
+backups
+coverage
+*.tsbuildinfo
