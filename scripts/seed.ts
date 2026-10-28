@@ -1,9 +1,6 @@
 import "./env";
 // Must run before app/lib/auth is imported: auth.ts reads this at load time.
 process.env.ATLAS_ALLOW_SIGNUP = "true";
-import { db } from "../app/lib/db";
-import { auth } from "../app/lib/auth";
-import { alertRules, user } from "../app/lib/schema";
 import { eq } from "drizzle-orm";
 
 const ADMIN_EMAIL = process.env.ATLAS_ADMIN_EMAIL ?? "admin@atlas.local";
@@ -75,6 +72,15 @@ const alertRuleSeedData = [
 ] as const;
 
 async function seed() {
+  // Keep these imports after the process-local sign-up override above. Static
+  // imports are initialized before module body statements, regardless of their
+  // position in the file.
+  const [{ db }, { auth }, { alertRules, user }] = await Promise.all([
+    import("../app/lib/db"),
+    import("../app/lib/auth"),
+    import("../app/lib/schema"),
+  ]);
+
   // 0. Drop retired rules. webhook_error_rate (Instagram chatbot) is out of
   //    scope for the generic monitoring system and its engine branch is gone.
   const removed = await db
