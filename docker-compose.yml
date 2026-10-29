@@ -48,6 +48,16 @@ services:
     depends_on:
       migrate:
         condition: service_completed_successfully
+    networks:
+      - default
+      - dokploy-network
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=dokploy-network
+      - traefik.http.routers.atlas-portal.rule=Host(`${DOMAIN}`)
+      - traefik.http.routers.atlas-portal.entrypoints=websecure
+      - traefik.http.routers.atlas-portal.tls.certResolver=letsencrypt
+      - traefik.http.services.atlas-portal.loadbalancer.server.port=3000
     healthcheck:
       test:
         - CMD
@@ -101,6 +111,7 @@ services:
     restart: unless-stopped
 
   caddy:
+    profiles: ["standalone"]
     image: caddy:2-alpine
     environment:
       DOMAIN: ${DOMAIN:?DOMAIN must be set}
@@ -120,3 +131,7 @@ volumes:
   postgres_data:
   caddy_data:
   caddy_config:
+
+networks:
+  dokploy-network:
+    external: true

@@ -38,4 +38,4 @@ backup: check-env
 	  echo "Backup written to backups/atlas_portal-$$stamp.sql"
 
 restart: check-env
-	$(COMPOSE) restart app prober alert-engine caddy
+	$(COMPOSE) restart app prober alert-engine
