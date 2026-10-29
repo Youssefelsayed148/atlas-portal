@@ -1,6 +1,19 @@
 import { db } from "@/app/lib/db";
-import { clients, clientAssets, activityLog, alerts, logs } from "@/app/lib/schema";
+import {
+  clients,
+  clientAssets,
+  activityLog,
+  alerts,
+  logs,
+  serviceChecks,
+  serviceCheckResults,
+} from "@/app/lib/schema";
 import { eq, desc, and, isNull } from "drizzle-orm";
+import { toServiceCheckView } from "@/app/lib/service-check-view";
+import {
+  ServiceChecksPanel,
+  type CheckableAsset,
+} from "@/components/clients/service-checks";
 import { SeverityTag, LogLevelBadge, type Severity } from "@/components/severity";
 import { notFound } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -81,6 +94,49 @@ export default async function ClientDetailPage({
     .where(eq(logs.clientId, id))
     .orderBy(desc(logs.createdAt))
     .limit(10);
+
+  // Service checks (admin + developer only, same gate as the Health section).
+  const canViewChecks = roleCanViewSection(user.role, "health");
+  const checkRows = canViewChecks
+    ? await db
+        .select({ check: serviceChecks, asset: clientAssets })
+        .from(serviceChecks)
+        .innerJoin(clientAssets, eq(serviceChecks.assetId, clientAssets.id))
+        .where(eq(clientAssets.clientId, id))
+        .orderBy(desc(serviceChecks.createdAt))
+    : [];
+  const checkViews = await Promise.all(
+    checkRows.map(async ({ check, asset }) => {
+      const [latest] = await db
+        .select()
+        .from(serviceCheckResults)
+        .where(eq(serviceCheckResults.checkId, check.id))
+        .orderBy(desc(serviceCheckResults.checkedAt))
+        .limit(1);
+      return toServiceCheckView(check, asset, latest ?? null);
+    })
+  );
+  const checkableAssets: CheckableAsset[] = assets
+    .filter(
+      (a) =>
+        a.status !== "archived" &&
+        (a.assetType === "website" ||
+          a.assetType === "app" ||
+          a.assetType === "chatbot") &&
+        roleCanManageAssetType(user.role, a.assetType)
+    )
+    .map((a) => {
+      const meta = (a.meta ?? {}) as Record<string, unknown>;
+      return {
+        id: a.id,
+        name: a.name,
+        assetType: a.assetType,
+        url:
+          a.assetType === "website" && typeof meta.url === "string"
+            ? meta.url
+            : undefined,
+      };
+    });
 
   const clientHealth: Severity = openAlerts.some(
     (a) => a.severity === "critical"
@@ -179,6 +235,25 @@ export default async function ClientDetailPage({
             );
           })}
         </div>
+
+        {/* Service checks — what the prober watches for this client */}
+        {canViewChecks && (
+          <Card className="border-border bg-card">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Activity className="size-5 text-primary" />
+                Service checks
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ServiceChecksPanel
+                checks={checkViews}
+                assets={checkableAssets}
+                canManage={roleCanManageClients(user.role)}
+              />
+            </CardContent>
+          </Card>
+        )}
 
         {/* Activity log — visible to all roles */}
         <Card className="border-border bg-card">
