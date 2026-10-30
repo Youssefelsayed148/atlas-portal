@@ -1,0 +1,19 @@
+# OSIRIS overlay: Traefik (dokploy-traefik) terminates TLS via its file provider.
+# Caddy is profile-gated OFF so it never binds 80/443 (owned by the edge) and
+# the stack publishes ZERO ports. app joins the external dokploy-network
+# overlay so Traefik resolves it by alias; a unique alias avoids being shadowed
+# by unrelated services on the shared network.
+services:
+  caddy:
+    profiles: ["edge-caddy"]
+
+  app:
+    networks:
+      default: {}
+      dokploy-network:
+        aliases:
+          - atlas-portal-app
+
+networks:
+  dokploy-network:
+    external: true

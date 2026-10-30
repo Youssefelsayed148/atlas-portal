@@ -1,6 +1,6 @@
 SHELL := /bin/sh
 ENV_FILE := .env.production
-COMPOSE := docker compose --env-file $(ENV_FILE)
+COMPOSE := docker compose --env-file $(ENV_FILE) -f docker-compose.yml -f compose.osiris.yaml
 
 .PHONY: up down logs ps migrate seed backup restart check-env
 
